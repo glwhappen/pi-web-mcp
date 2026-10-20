@@ -1,0 +1,31 @@
+# Example systemd unit for the HTTP (Streamable HTTP MCP) mode.
+# Adjust paths, host and port; the token lives in $PI_WEB_MCP_HOME/config.json.
+#
+#   sudo cp deploy/pi-web-mcp.service.example /etc/systemd/system/pi-web-mcp.service
+#   sudo systemctl daemon-reload && sudo systemctl enable --now pi-web-mcp
+#
+# Notes:
+#  - Bind a docker-bridge address such as 172.17.0.1 only if a reverse proxy in a
+#    container has to reach it; any non-loopback host REQUIRES httpToken to be set,
+#    otherwise the server refuses to start.
+#  - Use --readonly here to expose a read-only endpoint to other AIs.
+#  - --write-root /srv/code restricts write operations to sessions in that project.
+
+[Unit]
+Description=pi-web-mcp (MCP server over the Pi Web HTTP API)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+# Config directory holding config.json (baseUrl, password, httpToken).
+Environment=PI_WEB_MCP_HOME=/root/.config/pi-web-mcp
+# Where pi-web listens; overrides baseUrl from config.json.
+Environment=PI_WEB_URL=http://127.0.0.1:30141
+WorkingDirectory=/opt/pi-web-mcp
+ExecStart=/usr/bin/env node /opt/pi-web-mcp/src/index.js --http --host 127.0.0.1 --port 30142
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

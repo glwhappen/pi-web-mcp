@@ -1,0 +1,52 @@
+{
+  "name": "pi-web-mcp",
+  "version": "1.1.0",
+  "description": "MCP server for Pi Web — browse, triage, search and drive pi coding-agent sessions from any MCP client",
+  "type": "module",
+  "license": "MIT",
+  "author": "glwhappen",
+  "homepage": "https://github.com/glwhappen/pi-web-mcp#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/glwhappen/pi-web-mcp.git"
+  },
+  "bugs": {
+    "url": "https://github.com/glwhappen/pi-web-mcp/issues"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "pi-web",
+    "pi-coding-agent",
+    "ai-agent",
+    "claude",
+    "session",
+    "triage",
+    "stdio",
+    "streamable-http"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "main": "src/index.js",
+  "bin": {
+    "pi-web-mcp": "src/index.js"
+  },
+  "files": [
+    "src",
+    "README.md",
+    "README.zh-CN.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "node --test test/*.test.mjs",
+    "smoke": "node test/manual-smoke.mjs",
+    "smoke:write": "node test/manual-write.mjs",
+    "status": "node src/index.js --status"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.32.1",
+    "zod": "^4.6.7"
+  }
+}
