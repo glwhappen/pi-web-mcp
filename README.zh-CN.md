@@ -20,16 +20,17 @@ Pi Web 本身只给浏览器用。这个服务把它的接口变成 **25 个工�
 需要 **Node.js ≥ 22** 和一个正在运行的 Pi Web。
 
 ```bash
-# 直接用 npx 跑（stdio 模式）
-npx pi-web-mcp --status          # 自检：配置 + 试连 pi-web
-npx pi-web-mcp                   # 在 stdin/stdout 上跑 MCP 服务
+# 不克隆直接跑（npx 会自动从 GitHub 取包）
+npx -y github:glwhappen/pi-web-mcp --status    # 自检：配置 + 试连 pi-web
+npx -y github:glwhappen/pi-web-mcp             # 在 stdin/stdout 上跑 MCP 服务
 ```
 
-或者从源码装：
+或者装一次：
 
 ```bash
-git clone https://github.com/glwhappen/pi-web-mcp
-cd pi-web-mcp && npm ci
+npm install -g github:glwhappen/pi-web-mcp   # 之后直接跑 pi-web-mcp
+# 或者克隆下来：
+git clone https://github.com/glwhappen/pi-web-mcp && cd pi-web-mcp && npm ci
 node src/index.js --status
 ```
 
@@ -47,7 +48,7 @@ export PI_WEB_PASSWORD=你的-pi-web-密码     # Basic Auth，用户名固定 p
   "mcpServers": {
     "pi-web": {
       "command": "npx",
-      "args": ["-y", "pi-web-mcp"],
+      "args": ["-y", "github:glwhappen/pi-web-mcp"],
       "env": { "PI_WEB_URL": "http://127.0.0.1:30141", "PI_WEB_PASSWORD": "…" },
       "exposure": "deferred",
       "toolExposure": {

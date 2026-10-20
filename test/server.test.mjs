@@ -13,10 +13,20 @@ const SERVER = path.join(import.meta.dirname, "..", "src", "index.js");
 
 async function withServer({ mock, args = [], env = {} } = {}) {
   const home = fs.mkdtempSync(path.join(os.tmpdir(), "pi-web-mcp-test-"));
+  // HOME 也指到临时目录：否则会读到开发机上的 ~/pi-web.password，
+  // 测试就在「本机通过、CI 失败」之间飘（CI 第一次跑就抓到了这个）。
+  const fakeHome = fs.mkdtempSync(path.join(os.tmpdir(), "pi-web-mcp-home-"));
   const transport = new StdioClientTransport({
     command: process.execPath,
     args: [SERVER, ...args],
-    env: { ...process.env, PI_WEB_URL: mock.url, PI_WEB_MCP_HOME: home, ...env },
+    env: {
+      ...process.env,
+      HOME: fakeHome,
+      PI_WEB_URL: mock.url,
+      PI_WEB_MCP_HOME: home,
+      PI_WEB_PASSWORD: "test-password",
+      ...env,
+    },
     stderr: "ignore",
   });
   const client = new Client({ name: "test", version: "0" });
@@ -165,6 +175,17 @@ test("git / 文件 / 模型 / 实时流等工具都能返回", async (t) => {
   assert.ok(!watched.isError, watched.text);
   assert.match(watched.text, /你好/);
   assert.match(watched.text, /read/);
+});
+
+test("pi-web 需要密码而没配时给出可操作的报错", async (t) => {
+  const mock = await startMockPiWeb({ requireAuth: true });
+  t.after(() => mock.close());
+  const { client, call } = await withServer({ mock, env: { PI_WEB_PASSWORD: "" } });
+  t.after(() => client.close());
+  const result = await call("piweb_status", {});
+  assert.ok(result.isError, result.text);
+  assert.match(result.text, /需要密码/);
+  assert.match(result.text, /PI_WEB_PASSWORD/);
 });
 
 test("重命名与删除走 guard，并写入假 pi-web", async (t) => {

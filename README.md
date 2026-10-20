@@ -20,16 +20,17 @@ Pi Web itself only serves a browser. This server turns its API into **25 tools**
 Requires **Node.js ≥ 22** and a running Pi Web instance.
 
 ```bash
-# 1. run it straight from the CLI (stdio mode)
-npx pi-web-mcp --status          # connectivity + config self-check
-npx pi-web-mcp                   # stdio MCP server on stdin/stdout
+# run it without cloning (npm resolves the GitHub repo)
+npx -y github:glwhappen/pi-web-mcp --status    # connectivity + config self-check
+npx -y github:glwhappen/pi-web-mcp             # stdio MCP server on stdin/stdout
 ```
 
-Or install from source:
+Or install it once:
 
 ```bash
-git clone https://github.com/glwhappen/pi-web-mcp
-cd pi-web-mcp && npm ci
+npm install -g github:glwhappen/pi-web-mcp   # then run `pi-web-mcp`
+# or, from a clone:
+git clone https://github.com/glwhappen/pi-web-mcp && cd pi-web-mcp && npm ci
 node src/index.js --status
 ```
 
@@ -47,7 +48,7 @@ Register it with your MCP client. For pi, `~/.pi/agent/mcp.json`:
   "mcpServers": {
     "pi-web": {
       "command": "npx",
-      "args": ["-y", "pi-web-mcp"],
+      "args": ["-y", "github:glwhappen/pi-web-mcp"],
       "env": { "PI_WEB_URL": "http://127.0.0.1:30141", "PI_WEB_PASSWORD": "…" },
       "exposure": "deferred",
       "toolExposure": {
